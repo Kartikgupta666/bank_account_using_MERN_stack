@@ -16,6 +16,11 @@ const UserSchema = new Schema({
   password: {
     type: String,
     require: true
+  },
+  accountbalance: {
+    type: Number,
+    default: 0,
+    require: true
   }
 
 });
