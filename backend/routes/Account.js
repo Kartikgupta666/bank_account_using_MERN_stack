@@ -32,14 +32,14 @@ router.post('/depositmoney', fetchuser, [
         const USER = await User.findById(id) //use to find name of the object
         USER.accountbalance += depositmoney;
         await USER.save();
-        console.log(USER)
+        // console.log(USER)
         const name = USER.name
 
         const accountbalance = new Account({
             user: req.user.id,
             name: name,
             status: "deposit",
-            accountbalance: depositmoney
+            money: depositmoney
 
         })
         const saveTransaction = await accountbalance.save();
@@ -82,7 +82,7 @@ router.post('/Withdrawl', fetchuser, [
             await USER.save();
         }
         else {
-            return res.send("not enough balance")
+            return res.json("not enough balance")
         }
         console.log(USER)
         const name = USER.name
@@ -91,7 +91,7 @@ router.post('/Withdrawl', fetchuser, [
             user: req.user.id,
             name: name,
             status: "withdraw",
-            accountbalance: withdrawlmoney
+            money: withdrawlmoney
 
         })
         const saveTransaction = await accountbalance.save();

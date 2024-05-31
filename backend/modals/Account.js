@@ -13,7 +13,7 @@ const AccountSchema = new Schema({
    status: {
       type: String
    },
-   accountbalance: {
+   money: {
       type: Number,
       default: 0,
       require: true

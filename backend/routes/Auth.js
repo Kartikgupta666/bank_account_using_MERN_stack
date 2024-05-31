@@ -6,6 +6,7 @@ const jwt = require('jsonwebtoken')
 const bcrypt = require('bcryptjs')
 const fetchuser = require('../middleware/fetchuser')
 const JWT_SECRET = "shhh";
+
 //route 1 : create a user using POST method "/api/user".
 router.post('/signup', [
     body("email", "enter a valid email").isEmail(),
@@ -29,8 +30,9 @@ router.post('/signup', [
             // User.insertMany([data]).then(data => res.send(data.id));       
             //   instead of using above logic use below logic to get user id
 
-            const salt = await bcrypt.genSalt(10);
-            const hashpass = await bcrypt.hash(password, salt);
+            const salt = await bcrypt.genSalt(10); //adding salt
+            const hashpass = await bcrypt.hash(password, salt); //make password hash and save in DB
+
             const data = new User({
                 email,
                 password: hashpass,
@@ -42,9 +44,12 @@ router.post('/signup', [
                     id: savedUser.id
                 }
             }
-            
+            // finding account number of the recently saved query and send to user for further login process 
+            const accountNumber = await User.findOne({ email: email })
+
             const authtocken = jwt.sign(tocken, JWT_SECRET);
-            res.status(201).json({ authtocken });
+            res.status(201).json({ authtocken, accountnumber: accountNumber.accountnumber });
+
         }
     }
 })
@@ -53,7 +58,7 @@ router.post('/signup', [
 
 //route 2 :  login an user using account no. and password using post method 
 router.post('/login', [
-    body("email", "enter a valid email").isEmail(),
+    body("accountNumber", "account number must be 12 digits").isLength({ max: 12 }),
     body("password", "password cannot be blank").exists(),
 ], async (req, res) => {
 
@@ -64,8 +69,8 @@ router.post('/login', [
         return res.status(400).json({ errors: result.array([]) });
     }
     try {
-        const { email, password } = req.body;
-        const user = await User.findOne({ email: email })
+        const { accountnumber, password } = req.body;
+        const user = await User.findOne({ accountnumber: accountnumber })
         if (user) {
             // bcrypt.compare is inbuilt function in bcrypt package to comapre password hash from all existing hashes
             const comparepass = await bcrypt.compare(password, user.password);
@@ -80,9 +85,9 @@ router.post('/login', [
                         id: user.id
                     }
                 }
-               
+
                 const authtocken = jwt.sign(tocken, JWT_SECRET);
-                res.status(201).json({ authtocken });
+                res.status(201).json( authtocken );
             }
 
         }
@@ -103,9 +108,9 @@ router.post('/login', [
 })
 
 // route 3 : get user logged in details "login required"
-router.post('/getuser',fetchuser , async (req, res) => {
+router.post('/getuser', fetchuser, async (req, res) => {
 
-// fetchuser is a middleware which is created to decode the id from the web tocken
+    // fetchuser is a middleware which is created to decode the id from the web tocken
 
     try {
         const userid = req.user.id;
