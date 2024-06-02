@@ -1,14 +1,8 @@
 import React, { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import axios from 'axios'
-// import { useDispatch } from 'react-redux';
-// import { actioncreators } from '../state/index'
-// import { bindActionCreators } from 'redux';
-export default function Signup() {
-    // const dispatch = useDispatch()
-    // const { showname } = bindActionCreators(actioncreators, dispatch)
-    // const {ShowaccountNo} = bindActionCreators(actioncreators , dispatch)
 
+export default function Signup() {
 
     const history = useNavigate();
     const [name, setName] = useState('')
@@ -23,13 +17,18 @@ export default function Signup() {
             await axios.post("http://localhost:8000/api/user/signup", {
                 name: name,
                 email: email,
-                password: password
+                password: password,
+                headers: {
+                    "Content-Type": "application/json"
+                }
             })
                 .then(res => {
+                    localStorage.setItem('token' , res.data.authToken)
+                    // console.log(res.data.authToken)
                     history("/dashboard")
                 })
                 .catch(e => {
-                    alert("wronge details");
+                    alert("something went wronge!!");
                     console.log(e);
                 })
         }
@@ -61,10 +60,7 @@ export default function Signup() {
                             <label htmlFor="email" className="form-label">Email address</label>
                             <input type="email" className="form-control" onChange={(e) => { setEmail(e.target.value) }} id="email" placeholder="name@example.com" />
                         </div>
-                        {/* <div className="mb-3 ">
-                            <label htmlFor="accountno" className="form-label">AccountNo</label>
-                            <input type="text" className="form-control" onChange={(e) => { setaccountno(e.target.value) }} id="accountno" placeholder="enter user name" />
-                        </div> */}
+                      
                         <div className="mb-3">
                             <label htmlFor="password" className="form-label">Password</label>
                             <input type="password" className="form-control" id="password" placeholder="Enter Password" />

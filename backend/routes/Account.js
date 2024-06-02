@@ -5,7 +5,7 @@ const Account = require('../modals/Account')
 const User = require('../modals/User')
 const fetchuser = require('../middleware/fetchuser')
 
-// Route 1 : get all the details using get request
+// Route 1 : get all the details using get request [login required]
 router.get('/accountdetails', fetchuser, async (req, res) => {
     const accountdetails = await Account.find({ user: req.user.id });
     res.json(accountdetails)
@@ -14,12 +14,12 @@ router.get('/accountdetails', fetchuser, async (req, res) => {
 
 // route 2 : deposit money using post request (login required)
 
-router.post('/depositmoney', fetchuser, [
-    body("depositmoney", "money is not less than 1rs").isInt({ min: 1 }),
+router.post('/depositmoney', [
+    body("money", "money is not less than 1rs").isInt({ min: 1 }),
 ], fetchuser, async (req, res) => {
 
     try {
-        const { depositmoney } = req.body
+        const { note, money } = req.body
         // is their error return bad req.
         const result = validationResult(req)
 
@@ -30,22 +30,22 @@ router.post('/depositmoney', fetchuser, [
         const id = req.user.id;
 
         const USER = await User.findById(id) //use to find name of the object
-        USER.accountbalance += depositmoney;
+        
+        const mny = parseInt(money)
+        USER.accountbalance += mny;
         await USER.save();
         // console.log(USER)
         const name = USER.name
 
         const accountbalance = new Account({
             user: req.user.id,
+            note: note,
             name: name,
             status: "deposit",
-            money: depositmoney
+            money: money
 
         })
         const saveTransaction = await accountbalance.save();
-
-
-
         res.json(saveTransaction)
     } catch (error) {
         console.log(error)
@@ -55,49 +55,48 @@ router.post('/depositmoney', fetchuser, [
 
 
 })
-
+// front end se data bhejne wala namm or backend mai data recieve krne wala namm same hona chaiye ni toh validation error dega or time khrab krega
 
 // route 3 : withdrawl money using post request (login required)
 
-router.post('/Withdrawl', fetchuser, [
-    body("withdrawlmoney", "money is not less than 1rs").isInt(),
+router.post('/Withdrawl', [
+    body("money", "money is not less than 1rs").isInt({ min: 1 }),
 ], fetchuser, async (req, res) => {
 
     try {
-        const { withdrawlmoney } = req.body
+        const { note, money } = req.body
         // is their error return bad req.
         const result = validationResult(req)
 
         if (!result.isEmpty()) {
 
             res.status(400).json({ errors: result.array([]) });
+            // console.log(result.array([]))
         }
         const id = req.user.id;
 
-
+        // console.log(typeof(money))
+        // const mny = parseInt(money)
         const USER = await User.findById(id) //use to find name of the object
-        if (USER.accountbalance >= withdrawlmoney) {
+        if (USER.accountbalance >= money) {
 
-            USER.accountbalance -= withdrawlmoney;
+            USER.accountbalance -= money;
             await USER.save();
         }
         else {
             return res.json("not enough balance")
         }
-        console.log(USER)
         const name = USER.name
 
         const accountbalance = new Account({
             user: req.user.id,
             name: name,
+            note: note,
             status: "withdraw",
-            money: withdrawlmoney
+            money: money
 
         })
         const saveTransaction = await accountbalance.save();
-
-
-
         res.json(saveTransaction)
     } catch (error) {
         console.log(error)

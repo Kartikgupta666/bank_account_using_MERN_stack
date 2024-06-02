@@ -19,7 +19,8 @@ const UserSchema = new Schema({
   },
   accountnumber: {
     type: String,
-    default : parseInt(Math.random() * 1e12)
+    default : parseInt(Math.random() * 1e12),
+    unique : true
   },
   accountbalance: {
     type: Number,

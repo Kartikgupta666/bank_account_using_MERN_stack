@@ -10,6 +10,9 @@ const AccountSchema = new Schema({
    name: {
       type: String
    },
+   note: {
+      type: String
+   },
    status: {
       type: String
    },
@@ -17,6 +20,10 @@ const AccountSchema = new Schema({
       type: Number,
       default: 0,
       require: true
+   },
+   date: {
+      type: Date,
+      default: Date.now
    }
 
 });

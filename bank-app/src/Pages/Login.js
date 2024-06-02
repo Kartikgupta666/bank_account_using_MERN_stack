@@ -1,17 +1,8 @@
 import React, { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import axios from 'axios'
-// import { useDispatch } from 'react-redux';
-// import { actioncreators } from '../state/index'
-// import { bindActionCreators } from 'redux';
+
 export default function Login() {
-
-    // const dispatch = useDispatch()
-    // const { showname } = bindActionCreators(actioncreators, dispatch)
-    // const {ShowaccountNo} = bindActionCreators(actioncreators , dispatch)
-    // const {ShowaccountBal} = bindActionCreators(actioncreators , dispatch)
-
-
 
     const history = useNavigate();
     const [accountNo, setAccountNo] = useState('')
@@ -23,12 +14,23 @@ export default function Login() {
         try {
             await axios.post("http://localhost:8000/api/user/login", {
                 accountnumber: accountNo,
-                password: password
+                password: password,
+                headers: {
+                    "Content-Type": "application/json"
+                }
             })
                 .then(res => {
 
-                    history("/dashboard")
-                    console.log(res.authtocken)
+                    // console.log(res.data.authToken)
+                    if (res.data.success === true) {
+                        // redirect
+                        localStorage.setItem('token' , res.data.authToken)
+                        history("/dashboard")
+                    }
+                    else {
+                        console.log(res.data)
+                    }
+
 
                 }).catch(e => {
                     console.log(e)

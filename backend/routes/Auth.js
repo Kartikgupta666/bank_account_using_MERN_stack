@@ -14,6 +14,7 @@ router.post('/signup', [
     body("password", "password must be 5 digit").isLength({ min: 5 }),
 
 ], async (req, res) => {
+    const success = false;
     const result = validationResult(req);
     const { email, password, name } = req.body;
 
@@ -24,7 +25,7 @@ router.post('/signup', [
     else {
         if (!result.isEmpty()) {
 
-            res.status(400).json({ errors: result.array([]) });
+            res.status(400).json({ success, errors: result.array([]) });
         }
         else {
             // User.insertMany([data]).then(data => res.send(data.id));       
@@ -38,17 +39,19 @@ router.post('/signup', [
                 password: hashpass,
                 name
             })
-            const savedUser = await data.save();
-            const tocken = {
-                savedUser: {
-                    id: savedUser.id
+            const user = await data.save();
+            const Token = {
+                user: {
+                    id: user.id
                 }
             }
+            // console.log(Token)
+
             // finding account number of the recently saved query and send to user for further login process 
             const accountNumber = await User.findOne({ email: email })
-
-            const authtocken = jwt.sign(tocken, JWT_SECRET);
-            res.status(201).json({ authtocken, accountnumber: accountNumber.accountnumber });
+            const success = true
+            const authToken = jwt.sign(Token, JWT_SECRET);
+            res.status(201).json({ success, authToken, accountnumber: accountNumber.accountnumber });
 
         }
     }
@@ -76,18 +79,20 @@ router.post('/login', [
             const comparepass = await bcrypt.compare(password, user.password);
 
             if (!comparepass) {
-                return res.status(400).json({ error: "please try to login with correct credentials" });
+                success = false
+                return res.status(400).json({ success, error: "please try to login with correct credentials" });
             }
 
             else {
-                const tocken = {
+                const Token = {
                     user: {
                         id: user.id
                     }
                 }
-
-                const authtocken = jwt.sign(tocken, JWT_SECRET);
-                res.status(201).json( authtocken );
+                // console.log(Token)
+                const success = true
+                const authToken = jwt.sign(Token, JWT_SECRET);
+                res.status(201).json({ success, authToken });
             }
 
         }
@@ -110,12 +115,13 @@ router.post('/login', [
 // route 3 : get user logged in details "login required"
 router.post('/getuser', fetchuser, async (req, res) => {
 
-    // fetchuser is a middleware which is created to decode the id from the web tocken
+    // fetchuser is a middleware which is created to decode the id from the web Token
 
     try {
         const userid = req.user.id;
         const user = await User.findById(userid).select('-password')
-        res.send(user)
+        // console.log(user)
+        res.json(user)
     }
     catch (err) {
         console.log(err)
