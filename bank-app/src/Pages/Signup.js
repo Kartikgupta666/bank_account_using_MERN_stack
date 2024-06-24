@@ -24,7 +24,7 @@ export default function Signup() {
             })
                 .then(res => {
                     localStorage.setItem('token' , res.data.authToken)
-                    // console.log(res.data.authToken)
+                    // console.log(localStorage.getItem('token'))
                     history("/dashboard")
                 })
                 .catch(e => {

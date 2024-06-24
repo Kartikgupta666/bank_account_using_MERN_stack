@@ -1,6 +1,5 @@
 import { useState } from "react";
 import AccountContext from "./AccountContext";
-
 import axios from 'axios'
 const AccountState = (props) => {
 
@@ -20,9 +19,9 @@ const AccountState = (props) => {
           "authToken": localStorage.getItem('token')
         }
       });
-      const json = await response.data;
-      // console.log(json);
-      setuser(json);
+      const info = await response.data;
+      // console.log(info);
+      setuser(info);
     } catch (error) {
       console.error('Error fetching user data:', error);
     }

@@ -26,6 +26,7 @@ export default function Login() {
                         // redirect
                         localStorage.setItem('token' , res.data.authToken)
                         history("/dashboard")
+                        
                     }
                     else {
                         console.log(res.data)

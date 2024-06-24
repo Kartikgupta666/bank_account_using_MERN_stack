@@ -1,4 +1,4 @@
-import React, { useEffect, useContext } from 'react'
+import React, { useContext, useEffect } from 'react' //add use context
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import AccountContext from '../Context/account/AccountContext';
 
@@ -7,7 +7,7 @@ export default function Navbar() {
     let location = useLocation();
     let history = useNavigate()
 
-    const { user, getuser } = useContext(AccountContext)
+    const {user, getuser } = useContext(AccountContext)
 
     useEffect(() => {
         getuser()

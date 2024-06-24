@@ -1,5 +1,5 @@
-import React, { useContext, useEffect } from 'react'
-import { Link, useNavigate } from "react-router-dom";
+import React, { useContext, useEffect } from 'react' // add usecontext
+import { Link, useNavigate } from "react-router-dom"; // add usenavigate
 import AccountContext from '../Context/account/AccountContext';
 
 
