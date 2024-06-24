@@ -52,6 +52,7 @@ router.post('/signup', [
             const success = true
             const authToken = jwt.sign(Token, JWT_SECRET);
             res.status(201).json({ success, authToken, accountnumber: accountNumber.accountnumber });
+            // console.log(authToken)
 
         }
     }
@@ -92,6 +93,7 @@ router.post('/login', [
                 // console.log(Token)
                 const success = true
                 const authToken = jwt.sign(Token, JWT_SECRET);
+                // console.log(authToken)
                 res.status(201).json({ success, authToken });
             }
 
@@ -119,6 +121,7 @@ router.post('/getuser', fetchuser, async (req, res) => {
 
     try {
         const userid = req.user.id;
+        // console.log(userid)
         const user = await User.findById(userid).select('-password')
         // console.log(user)
         res.json(user)
